@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 class MyGrid extends StatelessWidget {
   const MyGrid({super.key});
 
+
+  void placePawn(int row, int col){
+    
+  }
+
   @override
   Widget build(BuildContext context){
 
@@ -17,19 +22,23 @@ class MyGrid extends StatelessWidget {
               Row(
                 mainAxisAlignment: .center,
                 children: [
-                  for (int i = 0; i < 3; i++)
-                  Container(
-                    decoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
-                      right: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
-                      top: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
-                      bottom: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
+                  for (int j = 0; j < 3; j++)
+                  InkWell(
+                    onTap: () {
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
+                        right: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
+                        top: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
+                        bottom: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
+                        ),
                       ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(40.0),
-                      child: Text(""),
+                      child: Padding(
+                        padding: const EdgeInsets.all(40.0),
+                        child: Text(""),
+                      ),
                     ),
                   ),
                 ],
