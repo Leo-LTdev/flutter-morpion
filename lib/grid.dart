@@ -39,6 +39,8 @@ class _MyGridSate extends State<MyGrid> {
 
   void isWinner(){
 
+    print(board);
+
     StateCase player;
     if (firstPlayer){
       player = StateCase.cross;
@@ -59,7 +61,6 @@ class _MyGridSate extends State<MyGrid> {
 
     for(int col = 0; col < size; col++ ){
       colWin = checkCol(0, col, player, 0);
-      print(colWin);
       if (colWin){
         break;
       }
@@ -92,7 +93,7 @@ class _MyGridSate extends State<MyGrid> {
       col++;
       return checkRow(row, col, player, counter);
     }
-
+    
     return false;
   }
   
@@ -109,7 +110,7 @@ class _MyGridSate extends State<MyGrid> {
     if (player.placeOlder == board[row][col].placeOlder){
       counter++;
       row++;
-      return checkRow(row, col, player, counter);
+      return checkCol(row, col, player, counter);
     }
 
     return false;
