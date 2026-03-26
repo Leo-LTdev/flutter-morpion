@@ -3,17 +3,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:scala_scoreboard/scala_scoreboard.dart';
 
-class Apidb extends StatelessWidget {
-  const Apidb({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(title: 'Instruments', home: HomePage());
-  }
-}
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final bool endGame;
+  const HomePage({super.key,required this.endGame});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -21,6 +14,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final _future = Supabase.instance.client.from('users').select();
+
+  void deleteDB() async {
+    final supabase = Supabase.instance.client;
+    await supabase.from('users').delete().neq('id', -1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,9 +92,9 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-              ),
-              
+              ), 
               const SizedBox(height: 40),
+              if (!widget.endGame) 
               SizedBox(
                 width: 250,
                 height: 50,
@@ -121,6 +119,7 @@ class _HomePageState extends State<HomePage> {
 
               TextButton(
                 onPressed: () {
+                  deleteDB();
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const MyGrid()),

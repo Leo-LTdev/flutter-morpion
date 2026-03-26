@@ -23,6 +23,7 @@ class MyGrid extends StatefulWidget {
 
 class _MyGridSate extends State<MyGrid> {
   final size = 3;
+  var counterclick = 0;
 
   List<List<StateCase>> board = [
     for (int row = 0; row < 3; row++)
@@ -33,6 +34,7 @@ class _MyGridSate extends State<MyGrid> {
 
   bool isWinner() {
     StateCase player;
+
     if (firstPlayer) {
       player = StateCase.cross;
     } else {
@@ -62,6 +64,7 @@ class _MyGridSate extends State<MyGrid> {
 
     var reverseDiagWin = false;
     reverseDiagWin = checkReverseDiag(2, 0, player, 0);
+    counterclick++;
 
     if (rowWin || colWin || diagWin || reverseDiagWin) {
       return true;
@@ -160,35 +163,15 @@ class _MyGridSate extends State<MyGrid> {
     }
   }
 
-  Future<bool?> checkDB() async {
-    final supabase = Supabase.instance.client;
-    final List<dynamic> data = await supabase.from('users').select();
-    var countP1 = 0;
-    var countP2 = 0;
-    for (var element in data) {
-      if (element['p1'] == 1) {
-        countP1++;
-      } else if (element['p2'] == 1) {
-        countP2++;
-      }
-    }
-    if (countP1 >= 3) {
-      await supabase.from('users').delete().neq('id', -1);
-      return true;
-    } else if (countP2 >= 3) {
-      await supabase.from('users').delete().neq('id', -1);
-      return false;
-    }
-  }
+  
+
 
   String getWinningPlayer() {
     if (firstPlayer) {
       insertDB(true);
-      checkDB();
       return "Joueur 1 à gagné";
     } else {
       insertDB(false);
-      checkDB();
       return "Joueur 2 à gagné";
     }
   }
@@ -226,6 +209,14 @@ class _MyGridSate extends State<MyGrid> {
                                     ? StateCase.cross
                                     : StateCase.circle;
                                 if (isWinner()) {
+                                  if (counterclick >= 8){
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MyGrid()
+                                    ),
+                                  );
+                                  } else {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
@@ -234,6 +225,7 @@ class _MyGridSate extends State<MyGrid> {
                                       ),
                                     ),
                                   );
+                                  }
                                 } else {
                                   firstPlayer = !firstPlayer;
                                 }
