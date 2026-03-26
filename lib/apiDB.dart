@@ -1,92 +1,3 @@
-// class Apidb extends StatelessWidget {
-//   const Apidb({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const MaterialApp(title: 'Instruments', home: HomePage());
-//   }
-// }
-
-// class HomePage extends StatefulWidget {
-//   const HomePage({super.key});
-
-//   @override
-//   State<HomePage> createState() => _HomePageState();
-// }
-
-// class _HomePageState extends State<HomePage> {
-//   final _future = Supabase.instance.client.from('users').select();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: FutureBuilder(
-//         future: _future,
-//         builder: (context, snapshot) {
-//           if (snapshot.connectionState == ConnectionState.waiting) {
-//             return const Center(child: CircularProgressIndicator());
-//           }
-
-//           if (snapshot.hasError) {
-//             return Center(child: Text('Erreur : ${snapshot.error}'));
-//           }
-
-//           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-//             return const Center(child: Text('Aucune donnée trouvée'));
-//           }
-
-//           final users = snapshot.data!;
-
-//           return Scoreboard(
-//             rightSectionBackgroundColorWhenScrolled: const Color.fromRGBO(250, 250, 250, 1),
-//             decoration: BoxDecoration(
-//               borderRadius: BorderRadius.circular(12),
-//               boxShadow: [
-//                 BoxShadow(
-//                   color: Colors.black.withOpacity(0.2),
-//                   offset: const Offset(0, 1),
-//                   blurRadius: 1,
-//                 ),
-//               ],
-//             ),
-//             header: const ScoreboardHeader(
-//               position: ScoreboardHeaderCell(child: Text('#')),
-//               title: ScoreboardHeaderCell(
-//                 shouldCenter: false,
-//                 child: Text('PLAYER', textAlign: TextAlign.left),
-//               ),
-//               dataColumns: [
-//                 ScoreboardHeaderCell(child: Text('R1')),
-//                 ScoreboardHeaderCell(child: Text('R2')),
-//               ],
-//             ),
-//             rows: users.asMap().entries.map((entry) {
-//               int index = entry.key;
-//               Map user = entry.value;
-
-//               return ScoreboardRow(
-//                 position: ScoreboardPositionCell(
-//                   trendMode: ScoreboardTrendMode.up,
-//                   child: Text('${index + 1}'),
-//                 ),
-//                 title: ScoreboardTitleCell(
-//                   leading: LogoGroup.withImageUrls([
-//                     user['avatar_url'] ?? 'https://i.pravatar.cc/300?u=${user['id']}',
-//                   ]),
-//                   title: Text('Play'),
-//                 ),
-//                 dataColumns: [
-//                   ScoreboardCell(child: Text(user['p1'].toString())),
-//                   ScoreboardCell(child: Text(user['p2'].toString())),
-//                 ],
-//               );
-//             }).toList(),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:scala_scoreboard/scala_scoreboard.dart';
@@ -109,7 +20,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Fetching all match records from the 'users' table
   late final _future = Supabase.instance.client.from('users').select();
 
   @override

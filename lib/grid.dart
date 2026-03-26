@@ -1,117 +1,103 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_application_1/winnner.dart';
 
-enum StateCase { 
+enum StateCase {
   empty(placeOlder: ""),
   cross(placeOlder: "X"),
   circle(placeOlder: "O");
-  
-  const StateCase({
-    required this.placeOlder
-  });
+
+  const StateCase({required this.placeOlder});
 
   final String placeOlder;
 }
 
-
-class MyGrid extends StatefulWidget{
-
-  const MyGrid({ super.key });
+class MyGrid extends StatefulWidget {
+  const MyGrid({super.key});
 
   @override
   State<StatefulWidget> createState() => _MyGridSate();
-
 }
 
 class _MyGridSate extends State<MyGrid> {
-
   final size = 3;
 
   List<List<StateCase>> board = [
-    for (int row = 0; row < 3; row++ ) [
-      for(int col = 0; col < 3; col++)
-        StateCase.empty
-      ]
-    ];
+    for (int row = 0; row < 3; row++)
+      [for (int col = 0; col < 3; col++) StateCase.empty],
+  ];
 
   bool firstPlayer = true;
 
-  bool isWinner(){
-
+  bool isWinner() {
     StateCase player;
-    if (firstPlayer){
+    if (firstPlayer) {
       player = StateCase.cross;
     } else {
       player = StateCase.circle;
     }
-    
+
     var rowWin = false;
 
-    for(int row = 0; row < size; row++ ){
+    for (int row = 0; row < size; row++) {
       rowWin = checkRow(row, 0, player, 0);
-      if (rowWin){
+      if (rowWin) {
         break;
       }
     }
 
     var colWin = false;
 
-    for(int col = 0; col < size; col++ ){
+    for (int col = 0; col < size; col++) {
       colWin = checkCol(0, col, player, 0);
-      if (colWin){
+      if (colWin) {
         break;
       }
     }
-    
-    var diagWin = false; 
+
+    var diagWin = false;
     diagWin = checkDiag(0, 0, player, 0);
 
     var reverseDiagWin = false;
     reverseDiagWin = checkReverseDiag(2, 0, player, 0);
 
-
-
-    if(rowWin || colWin || diagWin || reverseDiagWin){
-      getWinningPlayer();
+    if (rowWin || colWin || diagWin || reverseDiagWin) {
       return true;
     }
 
     return false;
-
   }
 
-  bool checkRow(int row, int col, StateCase player, int counter){
-
-    if (col > size ){
+  bool checkRow(int row, int col, StateCase player, int counter) {
+    if (col > size) {
       return false;
     }
 
-    if(counter == size){
+    if (counter == size) {
       return true;
     }
 
-    if (player == board[row][col]){
+    if (player == board[row][col]) {
       counter++;
       col++;
       return checkRow(row, col, player, counter);
     }
-    
+
     return false;
   }
-  
-  bool checkCol(int row, int col, StateCase player, int counter){
-    
-    if (row > size ){
+
+  bool checkCol(int row, int col, StateCase player, int counter) {
+    if (row > size) {
       return false;
     }
 
-    if(counter == size){
+    if (counter == size) {
       return true;
     }
 
-    if (player.placeOlder == board[row][col].placeOlder){
+    if (player.placeOlder == board[row][col].placeOlder) {
       counter++;
       row++;
       return checkCol(row, col, player, counter);
@@ -120,17 +106,16 @@ class _MyGridSate extends State<MyGrid> {
     return false;
   }
 
-  bool checkDiag(int row, int col, StateCase player, int counter){
-
-    if (row > size ){
+  bool checkDiag(int row, int col, StateCase player, int counter) {
+    if (row > size) {
       return false;
     }
 
-    if(counter == size){
+    if (counter == size) {
       return true;
     }
 
-    if (player.placeOlder == board[row][col].placeOlder){
+    if (player.placeOlder == board[row][col].placeOlder) {
       counter++;
       print(counter);
       row++;
@@ -141,17 +126,16 @@ class _MyGridSate extends State<MyGrid> {
     return false;
   }
 
-  bool checkReverseDiag(int row, int col,StateCase player, int counter){
-
-    if (row > size ){
+  bool checkReverseDiag(int row, int col, StateCase player, int counter) {
+    if (row > size) {
       return false;
     }
 
-    if(counter == size){
+    if (counter == size) {
       return true;
     }
 
-    if (player.placeOlder == board[row][col].placeOlder){
+    if (player.placeOlder == board[row][col].placeOlder) {
       counter++;
       row--;
       col++;
@@ -161,21 +145,56 @@ class _MyGridSate extends State<MyGrid> {
     return false;
   }
 
-  String getWinningPlayer(){
-    if (firstPlayer){
-      return "Joueur 1 à gagné"; 
+  void insertDB(bool Player) async {
+    final supabase = Supabase.instance.client;
+    if (Player) {
+      final data = await supabase.from('users').upsert({
+        'p1': 1,
+        'p2': 0,
+      }).select();
     } else {
-      return "Joueur 2 à gagné"; 
-
+      final data = await supabase.from('users').upsert({
+        'p1': 0,
+        'p2': 1,
+      }).select();
     }
   }
 
+  Future<bool?> checkDB() async {
+    final supabase = Supabase.instance.client;
+    final List<dynamic> data = await supabase.from('users').select();
+    var countP1 = 0;
+    var countP2 = 0;
+    for (var element in data) {
+      if (element['p1'] == 1) {
+        countP1++;
+      } else if (element['p2'] == 1) {
+        countP2++;
+      }
+    }
+    if (countP1 >= 3) {
+      await supabase.from('users').delete().neq('id', -1);
+      return true;
+    } else if (countP2 >= 3) {
+      await supabase.from('users').delete().neq('id', -1);
+      return false;
+    }
+  }
 
+  String getWinningPlayer() {
+    if (firstPlayer) {
+      insertDB(true);
+      checkDB();
+      return "Joueur 1 à gagné";
+    } else {
+      insertDB(false);
+      checkDB();
+      return "Joueur 2 à gagné";
+    }
+  }
 
   @override
-  Widget build(BuildContext context){
-
-
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF252C4A), // Un fond sombre moderne
       body: Center(
@@ -184,7 +203,11 @@ class _MyGridSate extends State<MyGrid> {
           children: [
             const Text(
               "Tic Tac Toe",
-              style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 20),
             Column(
@@ -197,13 +220,19 @@ class _MyGridSate extends State<MyGrid> {
                       for (int j = 0; j < 3; j++)
                         GestureDetector(
                           onTap: () {
-                            if (board[i][j] == StateCase.empty) { 
+                            if (board[i][j] == StateCase.empty) {
                               setState(() {
-                                board[i][j] = firstPlayer ? StateCase.cross : StateCase.circle;
-                                if (isWinner()){
+                                board[i][j] = firstPlayer
+                                    ? StateCase.cross
+                                    : StateCase.circle;
+                                if (isWinner()) {
                                   Navigator.pushReplacement(
                                     context,
-                                    MaterialPageRoute(builder: (context) => ResultPage(winner: getWinningPlayer())) 
+                                    MaterialPageRoute(
+                                      builder: (context) => ResultPage(
+                                        winner: getWinningPlayer(),
+                                      ),
+                                    ),
                                   );
                                 } else {
                                   firstPlayer = !firstPlayer;
@@ -217,22 +246,30 @@ class _MyGridSate extends State<MyGrid> {
                             decoration: BoxDecoration(
                               border: Border(
                                 right: BorderSide(
-                                  color: j < 2 ? Colors.white24 : Colors.transparent, 
+                                  color: j < 2
+                                      ? Colors.white24
+                                      : Colors.transparent,
                                   width: 2,
                                 ),
                                 bottom: BorderSide(
-                                  color: i < 2 ? Colors.white24 : Colors.transparent, 
+                                  color: i < 2
+                                      ? Colors.white24
+                                      : Colors.transparent,
                                   width: 2,
                                 ),
                               ),
                             ),
                             child: Center(
                               child: Text(
-                                board[i][j] == StateCase.cross ? "X" : (board[i][j] == StateCase.circle ? "O" : ""),
+                                board[i][j] == StateCase.cross
+                                    ? "X"
+                                    : (board[i][j] == StateCase.circle
+                                          ? "O"
+                                          : ""),
                                 style: TextStyle(
                                   fontSize: 60,
                                   fontWeight: FontWeight.w300,
-                                  color: board[i][j] == StateCase.cross 
+                                  color: board[i][j] == StateCase.cross
                                       ? const Color(0xFF64FFDA) // couleur X
                                       : const Color(0xFFFF5252), // couleur O
                                 ),
