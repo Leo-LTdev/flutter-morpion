@@ -65,13 +65,14 @@ class _MyGridSate extends State<MyGrid> {
         break;
       }
     }
-
-   
     
-    var diagWing;
-    var reverseDiagWin;
+    var diagWin = false; 
+    diagWin = checkDiag(0, 0, player, 0);
 
-    if(rowWin || colWin){
+    var reverseDiagWin = false;
+    reverseDiagWin = checkReverseDiag(2, 0, player, 0);
+
+    if(rowWin || colWin || diagWin || reverseDiagWin){
       getWinningPlayer();
     }
 
@@ -116,6 +117,47 @@ class _MyGridSate extends State<MyGrid> {
     return false;
   }
 
+  bool checkDiag(int row, int col, StateCase player, int counter){
+
+    if (row > size ){
+      return false;
+    }
+
+    if(counter == size){
+      return true;
+    }
+
+    if (player.placeOlder == board[row][col].placeOlder){
+      counter++;
+      print(counter);
+      row++;
+      col++;
+      return checkDiag(row, col, player, counter);
+    }
+
+    return false;
+  }
+
+  bool checkReverseDiag(int row, int col,StateCase player, int counter){
+
+    if (row > size ){
+      return false;
+    }
+
+    if(counter == size){
+      return true;
+    }
+
+    if (player.placeOlder == board[row][col].placeOlder){
+      counter++;
+      row--;
+      col++;
+      return checkReverseDiag(row, col, player, counter);
+    }
+
+    return false;
+  }
+
   void getWinningPlayer(){
     if (firstPlayer){
       print("Joueur 1 à gagné"); 
@@ -129,51 +171,72 @@ class _MyGridSate extends State<MyGrid> {
 
 
     return Scaffold(
+      backgroundColor: const Color(0xFF252C4A), // Un fond sombre moderne
       body: Center(
         child: Column(
-          mainAxisAlignment: .center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            for (int i = 0; i < 3; i++)
-              Row(
-                mainAxisAlignment: .center,
-                children: [
-                  for (int j = 0; j < 3; j++)
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        if (firstPlayer){
-                          board[i][j] = StateCase.cross;
-                          isWinner();
-                          firstPlayer = !firstPlayer;
-                        } else {
-                          board[i][j] = StateCase.circle;
-                          isWinner();
-                          firstPlayer = !firstPlayer;
-                        }
-                      });
-                    },
-                    child: Stack(
-                      alignment: AlignmentGeometry.center,
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                          border: Border(
-                            left: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
-                            right: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
-                            top: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
-                            bottom: BorderSide(color: Color.fromARGB(255, 1, 0, 0)),
+            const Text(
+              "Tic Tac Toe",
+              style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (int i = 0; i < 3; i++)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      for (int j = 0; j < 3; j++)
+                        GestureDetector(
+                          onTap: () {
+                            if (board[i][j] == StateCase.empty) { 
+                              setState(() {
+                                board[i][j] = firstPlayer ? StateCase.cross : StateCase.circle;
+                                isWinner();
+                                firstPlayer = !firstPlayer;
+                              });
+                            }
+                          },
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: j < 2 ? Colors.white24 : Colors.transparent, 
+                                  width: 2,
+                                ),
+                                bottom: BorderSide(
+                                  color: i < 2 ? Colors.white24 : Colors.transparent, 
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                board[i][j] == StateCase.cross ? "X" : (board[i][j] == StateCase.circle ? "O" : ""),
+                                style: TextStyle(
+                                  fontSize: 60,
+                                  fontWeight: FontWeight.w300,
+                                  color: board[i][j] == StateCase.cross 
+                                      ? const Color(0xFF64FFDA) // couleur X
+                                      : const Color(0xFFFF5252), // couleur O
+                                ),
+                              ),
                             ),
                           ),
-                          
                         ),
-                        Text(board[i][j].placeOlder),
-                      ],
-                    ),
+                    ],
                   ),
-                ],
-              ),
+              ],
+            ),
+            const SizedBox(height: 50),
+            Text(
+              firstPlayer ? "Tour de : X" : "Tour de : O",
+              style: const TextStyle(color: Colors.white70, fontSize: 18),
+            ),
           ],
         ),
       ),
