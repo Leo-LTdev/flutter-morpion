@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/winnner.dart';
 
 enum StateCase { 
   empty(placeOlder: ""),
@@ -37,9 +38,7 @@ class _MyGridSate extends State<MyGrid> {
 
   bool firstPlayer = true;
 
-  void isWinner(){
-
-    print(board);
+  bool isWinner(){
 
     StateCase player;
     if (firstPlayer){
@@ -72,10 +71,14 @@ class _MyGridSate extends State<MyGrid> {
     var reverseDiagWin = false;
     reverseDiagWin = checkReverseDiag(2, 0, player, 0);
 
+
+
     if(rowWin || colWin || diagWin || reverseDiagWin){
       getWinningPlayer();
+      return true;
     }
 
+    return false;
 
   }
 
@@ -158,13 +161,16 @@ class _MyGridSate extends State<MyGrid> {
     return false;
   }
 
-  void getWinningPlayer(){
+  String getWinningPlayer(){
     if (firstPlayer){
-      print("Joueur 1 à gagné"); 
+      return "Joueur 1 à gagné"; 
     } else {
-      print("Joueur 2 à gagné");
+      return "Joueur 2 à gagné"; 
+
     }
   }
+
+
 
   @override
   Widget build(BuildContext context){
@@ -194,8 +200,14 @@ class _MyGridSate extends State<MyGrid> {
                             if (board[i][j] == StateCase.empty) { 
                               setState(() {
                                 board[i][j] = firstPlayer ? StateCase.cross : StateCase.circle;
-                                isWinner();
-                                firstPlayer = !firstPlayer;
+                                if (isWinner()){
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => ResultPage(winner: getWinningPlayer())) 
+                                  );
+                                } else {
+                                  firstPlayer = !firstPlayer;
+                                }
                               });
                             }
                           },

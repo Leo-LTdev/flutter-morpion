@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     
 
     return MaterialApp(
-      
+      title: title,
       home: MyGrid());
   }
 }
