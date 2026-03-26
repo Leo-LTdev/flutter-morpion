@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/apiDB.dart';
+import 'package:flutter_application_1/grid.dart';
 
 class ResultPage extends StatelessWidget {
   final String winner; // On passe le nom du gagnant en paramètre
@@ -29,9 +31,12 @@ class ResultPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   
-                  // Navigator.pushReplacement(); 
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Apidb())
+                  ); 
                 },
-                child: const Text("Rejouer"),
+                child: const Text("ScorBoard"),
               ),
             ],
           ),

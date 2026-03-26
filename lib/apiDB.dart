@@ -1,96 +1,7 @@
-// class Apidb extends StatelessWidget {
-//   const Apidb({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const MaterialApp(title: 'Instruments', home: HomePage());
-//   }
-// }
-
-// class HomePage extends StatefulWidget {
-//   const HomePage({super.key});
-
-//   @override
-//   State<HomePage> createState() => _HomePageState();
-// }
-
-// class _HomePageState extends State<HomePage> {
-//   final _future = Supabase.instance.client.from('users').select();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: FutureBuilder(
-//         future: _future,
-//         builder: (context, snapshot) {
-//           if (snapshot.connectionState == ConnectionState.waiting) {
-//             return const Center(child: CircularProgressIndicator());
-//           }
-
-//           if (snapshot.hasError) {
-//             return Center(child: Text('Erreur : ${snapshot.error}'));
-//           }
-
-//           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-//             return const Center(child: Text('Aucune donnée trouvée'));
-//           }
-
-//           final users = snapshot.data!;
-
-//           return Scoreboard(
-//             rightSectionBackgroundColorWhenScrolled: const Color.fromRGBO(250, 250, 250, 1),
-//             decoration: BoxDecoration(
-//               borderRadius: BorderRadius.circular(12),
-//               boxShadow: [
-//                 BoxShadow(
-//                   color: Colors.black.withOpacity(0.2),
-//                   offset: const Offset(0, 1),
-//                   blurRadius: 1,
-//                 ),
-//               ],
-//             ),
-//             header: const ScoreboardHeader(
-//               position: ScoreboardHeaderCell(child: Text('#')),
-//               title: ScoreboardHeaderCell(
-//                 shouldCenter: false,
-//                 child: Text('PLAYER', textAlign: TextAlign.left),
-//               ),
-//               dataColumns: [
-//                 ScoreboardHeaderCell(child: Text('R1')),
-//                 ScoreboardHeaderCell(child: Text('R2')),
-//               ],
-//             ),
-//             rows: users.asMap().entries.map((entry) {
-//               int index = entry.key;
-//               Map user = entry.value;
-
-//               return ScoreboardRow(
-//                 position: ScoreboardPositionCell(
-//                   trendMode: ScoreboardTrendMode.up,
-//                   child: Text('${index + 1}'),
-//                 ),
-//                 title: ScoreboardTitleCell(
-//                   leading: LogoGroup.withImageUrls([
-//                     user['avatar_url'] ?? 'https://i.pravatar.cc/300?u=${user['id']}',
-//                   ]),
-//                   title: Text('Play'),
-//                 ),
-//                 dataColumns: [
-//                   ScoreboardCell(child: Text(user['p1'].toString())),
-//                   ScoreboardCell(child: Text(user['p2'].toString())),
-//                 ],
-//               );
-//             }).toList(),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
+import 'package:flutter_application_1/grid.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:scala_scoreboard/scala_scoreboard.dart';
-import 'package:flutter_application_1/grid.dart';
 
 class Apidb extends StatelessWidget {
   const Apidb({super.key});
@@ -109,74 +20,147 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Fetching all match records from the 'users' table
   late final _future = Supabase.instance.client.from('users').select();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final List matches = snapshot.data!;
+  return Scaffold(
+    backgroundColor: const Color(0xFF1A1F38), 
+    body: FutureBuilder(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator(color: Color(0xFF64FFDA)));
+        }
+        
+        final List matches = snapshot.data!;
 
-          return Scoreboard(
-            rightSectionBackgroundColorWhenScrolled: const Color.fromRGBO(250, 250, 250, 1),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  offset: const Offset(0, 1),
-                  blurRadius: 1,
-                ),
-              ],
+        return Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF252C4A), Color(0xFF1A1F38)],
             ),
-            header: ScoreboardHeader(
-              position: const ScoreboardHeaderCell(child: Text('#')),
-              title: const ScoreboardHeaderCell(
-                shouldCenter: false,
-                child: Text('PLAYER', textAlign: TextAlign.left),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "RÉSULTATS BO5",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                ),
               ),
-              dataColumns: List.generate(
-                matches.length,
-                (index) => ScoreboardHeaderCell(child: Text('M${index + 1}')),
+              const SizedBox(height: 30),
+              
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2D3558),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Scoreboard(
+                    rightSectionBackgroundColorWhenScrolled: const Color(0xFF2D3558),
+                    header: ScoreboardHeader(
+                      position: const ScoreboardHeaderCell(child: Text('#', style: TextStyle(color: Colors.white70))),
+                      title: const ScoreboardHeaderCell(
+                        shouldCenter: false,
+                        child: Text('JOUEUR', style: TextStyle(color: Color(0xFF2D3558), fontWeight: FontWeight.bold)),
+                      ),
+                      dataColumns: List.generate(
+                        matches.length,
+                        (index) => ScoreboardHeaderCell(
+                          child: Text('M${index + 1}', style: const TextStyle(color: Color(0xFF2D3558))),
+                        ),
+                      ),
+                    ),
+                    rows: [
+                      _buildPlayerRow('1', 'Player 1', 'p1', matches, const Color.fromARGB(255, 44, 219, 178)),
+                      _buildPlayerRow('2', 'Player 2', 'p2', matches, const Color.fromARGB(255, 196, 27, 27)),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            rows: [
-              ScoreboardRow(
-                position: const ScoreboardPositionCell(
-                  trendMode: ScoreboardTrendMode.up,
-                  child: Text('1'),
+              
+              const SizedBox(height: 40),
+              SizedBox(
+                width: 250,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF64FFDA),
+                    foregroundColor: const Color(0xFF1A1F38),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 5,
+                  ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MyGrid()),
+                    );
+                  },
+                  child: const Text("CONTINUER LE BO5", style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
-                title: ScoreboardTitleCell(
-                  leading: LogoGroup.withImageUrls(['https://i.pravatar.cc/300?u=p1']),
-                  title: const Text('Player 1'),
-                ),
-                dataColumns: matches.map((match) {
-                  return ScoreboardCell(child: Text(match['p1']?.toString() ?? '0'));
-                }).toList(),
               ),
-              ScoreboardRow(
-                position: const ScoreboardPositionCell(
-                  trendMode: ScoreboardTrendMode.up,
-                  child: Text('2'),
+              
+              const SizedBox(height: 15),
+
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MyGrid()),
+                  );
+                },
+                child: const Text(
+                  "Recommencer une partie",
+                  style: TextStyle(color: Colors.white54, decoration: TextDecoration.underline),
                 ),
-                title: ScoreboardTitleCell(
-                  leading: LogoGroup.withImageUrls(['https://i.pravatar.cc/300?u=p2']),
-                  title: const Text('Player 2'),
-                ),
-                dataColumns: matches.map((match) {
-                  return ScoreboardCell(child: Text(match['p2']?.toString() ?? '0'));
-                }).toList(),
               ),
             ],
-          );
-        },
-      ),
-    );
+          ),
+        );
+      },
+    ),
+  );
   }
+}
+
+ScoreboardRow _buildPlayerRow(String pos, String name, String key, List matches, Color color) {
+  return ScoreboardRow(
+    position: ScoreboardPositionCell(
+      child: Text(pos, style: const TextStyle(color: Color(0xFF2D3558))),
+    ),
+    title: ScoreboardTitleCell(
+      leading: LogoGroup.withImageUrls(['https://i.pravatar.cc/300?u=$key']),
+      title: Text(name, style: const TextStyle(fontSize: 20, color: Color(0xFF2D3558), fontWeight: FontWeight.bold)),
+    ),
+    dataColumns: matches.map((match) {
+      final score = match[key]?.toString() ?? '0';
+      return ScoreboardCell(
+        child: Text(
+          score,
+          style: TextStyle(
+            fontSize: 20,
+            color: score == '1' ? color : Color(0xFF2D3558), 
+            fontWeight: score == '1' ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      );
+    }).toList(),
+  );
 }
