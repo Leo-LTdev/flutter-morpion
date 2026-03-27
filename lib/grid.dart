@@ -66,6 +66,8 @@ class _MyGridSate extends State<MyGrid> {
     reverseDiagWin = checkReverseDiag(2, 0, player, 0);
     counterclick++;
 
+    print(counterclick);
+
     if (rowWin || colWin || diagWin || reverseDiagWin) {
       return true;
     }
@@ -208,15 +210,16 @@ class _MyGridSate extends State<MyGrid> {
                                 board[i][j] = firstPlayer
                                     ? StateCase.cross
                                     : StateCase.circle;
-                                if (isWinner()) {
-                                  if (counterclick >= 8){
+                                if (counterclick >= 8){
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => MyGrid()
                                     ),
                                   );
-                                  } else {
+                                }
+                                if (isWinner()) {
+                
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
@@ -225,7 +228,7 @@ class _MyGridSate extends State<MyGrid> {
                                       ),
                                     ),
                                   );
-                                  }
+                          
                                 } else {
                                   firstPlayer = !firstPlayer;
                                 }
